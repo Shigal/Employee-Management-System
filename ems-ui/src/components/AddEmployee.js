@@ -29,6 +29,16 @@ const AddEmployee = () => {
       });
   };
 
+  const reset = (e) => {
+    e.preventDefault(); // no refreshing of page
+    setEmployee({
+      id: "",
+      firstName: "",
+      lastName: "",
+      emailId: "",
+    });
+  };
+
   return (
     <div className="flex max-w-2xl shadow border-b mx-auto">
       <div className="px-8 py-8">
@@ -78,7 +88,10 @@ const AddEmployee = () => {
           >
             Save
           </button>
-          <button className=" rounded bg-teal-500 font-semibold text-white py-2 px-4 hover:bg-teal-800">
+          <button
+            onClick={reset}
+            className=" rounded bg-teal-500 font-semibold text-white py-2 px-4 hover:bg-teal-800"
+          >
             Clear
           </button>
         </div>
