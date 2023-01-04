@@ -110,7 +110,62 @@ function App() {
 }
 ```
 
-- 
+- when render starts call the data and display it on the table: useEffect hook
+- we need to have 2 states: to fetch all data, to handle loading of data
+  
+````
+  const [loading, setLoading] = useState(true);
+  const [employees, setEmployees] = useState(null);
+````
+- useEffect hook to fetch the data
+
+````
+useEffect(() => {
+   const fetchData = async () => {
+    setLoading(true);
+    try{
+      const response = await EmployeeService.getEmployees();
+      setEmployees(response.data);
+    } catch(error) {
+      console.log(error);
+    } 
+    setLoading(false);
+   };
+   fetchData();
+  }, [])
+````
+- here, we use ``async`` with ``wait`` to wait till the data gets loaded
+- while data is loading we set it to true
+- in try block we get all the employees by calling the API
+- then we set the state for employees with whatever data we get from the response
+- when fetching of data is done we again get loading to false
+- once the data is loaded we display the data
+
+- delete action
+
+```aidl
+const deleteEmployee = (e, id) => {
+    e.preventDefault();
+    EmployeeService.deleteEmployee(id).then((res => {
+      if(employees) {
+        setEmployees((prevElement) => {
+          return prevElement.filter((employee) => employee.id != id)
+        })
+      }
+    }))
+  }
+```
+- here, we prevent refreshing of the page. Then we call the method delete() by passing the id.
+- when we get the response, we set the new state for the employee, from previous state for each employee we are filtering out the employee with the given id
+- here, we first delete employee from the database then we delete the same employee from the stored state
+
+- ``(!loading && <>)``, this means if not loading then render whatever given in <>
+- to deconstruct the value from parameter
+``const {id} = useParams();``
+  
+-  
+
+
 
 #
 
