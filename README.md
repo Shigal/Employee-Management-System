@@ -1,5 +1,44 @@
 # Employee-Management-System
 
+
+### Custom Exception Handling in Service and Controller layer
+
+sample request: `localhost:8080/api/v1/employees/4`, `GET`
+
+```
+. . .
+],
+    "errorCode": "607",
+    "errorMessage": "given employee id does not exist No value present",
+```
+
+Note:
+never use try{} with validation , always use try{} with repository calls
+Because the current methods catch will catch it and throw the exception;
+
+```
+public Employee createEmployee(Employee employee) {
+    EmployeeEntity employeeEntity = new EmployeeEntity();
+    BeanUtils.copyProperties(employee, employeeEntity);
+
+    if(employee.getFirstName().isEmpty() || employee.getFirstName().length() == 0) {
+        throw new BusinessException("601", "Please send proper Firstname, It is blank");
+    }
+    try {
+        employeeRepository.save(employeeEntity);
+    }
+    catch (IllegalArgumentException e) {
+        throw new BusinessException("602", "This employee is null " + e.getMessage());
+    }
+    catch (Exception e) {
+        throw new BusinessException("603", "Something went wrong in service layer while saving the employee" + e.getMessage());
+    }
+    return employee;
+}
+```
+
+- `throws` keyword is used only for the checked exception whatever we are throwing here are Runtime exception
+
 ## Front-end: Tailwind CSS
 
 - to install Tailwind CSS to the app
