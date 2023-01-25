@@ -4,9 +4,12 @@ package com.shigal.ems.controller;/*
  *
  */
 
+import com.shigal.ems.exception.BusinessException;
+import com.shigal.ems.exception.ControllerException;
 import com.shigal.ems.model.Employee;
 import com.shigal.ems.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,28 +26,68 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/employees")
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
+    public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
+        try {
+            return new ResponseEntity<Employee>(employeeService.createEmployee(employee), HttpStatus.CREATED);
+        }
+        catch (BusinessException e) {
+            ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST); // check errorCode(601-607), provide correct HttpStatus
+        }
+        catch (Exception e) {
+            ControllerException ce = new ControllerException("608", "Something went wrong in controller");
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/employees")
-    public List<Employee> getAllEmployees(){
-        return employeeService.getAllEmployees();
+    public ResponseEntity<?> getAllEmployees(){
+        try {
+            return new ResponseEntity<List<Employee>>(employeeService.getAllEmployees(), HttpStatus.OK);
+        }
+        catch (BusinessException e) {
+            ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST); // check errorCode(601-607), provide correct HttpStatus
+        }
+        catch (Exception e) {
+            ControllerException ce = new ControllerException("609", "Something went wrong in controller");
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/employees/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable Long id){
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id){
         boolean deleted = false;
-        deleted = employeeService.deleteEmployee(id);
         Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", deleted);
-        return ResponseEntity.ok(response);
+        try {
+            deleted = employeeService.deleteEmployee(id);
+            response.put("deleted", deleted);
+            return ResponseEntity.ok(response);
+        }
+        catch (BusinessException e) {
+            ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            ControllerException ce = new ControllerException("610", "Something went wrong in controller");
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/employees/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id){
-        Employee employee = employeeService.getEmployeeById(id);
-        return ResponseEntity.ok(employee);
+    public ResponseEntity<?> getEmployeeById(@PathVariable Long id){
+        try {
+            Employee employee = employeeService.getEmployeeById(id);
+            return ResponseEntity.ok(employee);
+        }
+        catch (BusinessException e) {
+            ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            ControllerException ce = new ControllerException("611", "Something went wrong in controller");
+            return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/employees/{id}")
